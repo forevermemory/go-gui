@@ -1,0 +1,83 @@
+package tpl
+
+/*
+date:{{ .now }}
+*/
+
+import (
+  "github.com/gin-gonic/gin"
+  "🌴🌴/dbaccess"
+  "🌴🌴/model"
+)
+
+func Add{{ .ModelName }}(c *gin.Context) interface{}{
+   	var u = dbaccess.{{ .ModelName }}{}
+   	err := c.ShouldBind(&u)
+   	if err != nil {
+		return Response{-1,err.Error()}
+   	}
+   	err= model.Add{{ .ModelName }}(&u)
+   	if err != nil{
+		return Response{-1,err.Error()}
+   	}
+	   return Response{0,"ok"}
+}
+
+
+func Update{{ .ModelName }}(c *gin.Context) interface{}{
+   	var u = dbaccess.{{ .ModelName }}{}
+   	err := c.ShouldBind(&u)
+   	if err != nil {
+		return Response{-1,err.Error()}
+   	}
+   	err= model.Update{{ .ModelName }}(&u)
+    if err != nil{
+		return Response{-1,err.Error()}
+    }
+	return Response{0,"ok"}
+}
+
+
+func Get{{ .ModelName }}ById(c *gin.Context) interface{}{
+     var u = dbaccess.{{ .ModelName }}{}
+      err := c.ShouldBind(&u)
+     if err != nil{
+		return Response{-1,err.Error()}
+     }
+     data,err := model.Get{{ .ModelName }}ById(u.Id)
+     if err != nil{
+		return Response{-1,err.Error()}
+     }
+	 return Response{0,"ok",data}
+}
+
+func List{{ .ModelName }}(c *gin.Context) interface{}{
+    var u = dbaccess.{{ .ModelName }}{PageSize:10,PageNo:1}
+    err := c.ShouldBind(&u)
+    if err != nil {
+		return Response{-1,err.Error()}
+    }
+    data,err := model.List{{ .ModelName }}(&u)
+    if err != nil{
+		return Response{-1,err.Error()}
+     }
+	 return Response{0,"ok",data}
+}
+func Delete{{ .ModelName }}(c *gin.Context) interface{}{
+    var u = dbaccess.{{ .ModelName }}{}
+    err := ctx.ShouldBind(&u)
+    if err != nil {
+		return Response{-1,err.Error()}
+    }
+    err = model.Delete{{ .ModelName }}(u.Id)
+    if err != nil{
+		return Response{-1,err.Error()}
+    }
+	return Response{-1,"ok"}
+}
+
+type Response struct {
+	Code int         `json:"code"`
+	Msg string         `json:"msg"`
+	Data    interface{} `json:"data"`
+}

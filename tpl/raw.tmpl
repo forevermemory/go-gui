@@ -1,0 +1,111 @@
+package dbaccess
+
+import (
+	"database/sql"
+	"errors"
+)
+
+type {{ .ModelName }} struct {
+        Id  int  `json:"id" form:"id" gorm:"column:ID"`
+        Name  string  `json:"name" form:"name" gorm:"column:NAME"`
+}
+
+
+func Add{{ .ModelName }}(b *{{ .ModelName }})(int64,error){
+    db,err:=openDB()
+     defer db.Close()
+    if err!=nil{
+        return 0, fmt.Errorf("数据库连接异常：%w",err)
+    }
+    sql:=`insert into {{ .ModelName }} ( NAME ) values (?)`
+       result,er:= db.Exec(sql,b.Name)
+       if er!=nil{
+            return 0,er
+       }
+       return  result.LastInsertId()
+}
+
+//remember: all of the fields will be updated ,although  you do not want to , be carefull
+func Update{{ .ModelName }}(b *{{ .ModelName }})(int64,error){
+    db,err:=openDB()
+     defer db.Close()
+    if err!=nil{
+        return 0, fmt.Errorf("数据库连接异常：%w",err)
+    }
+    sql:=`update {{ .ModelName }} set NAME=?  where ID=?`
+
+    result,er:=db.Exec(sql,b.Name,b.Id)
+    if er!=nil{
+        return 0,fmt.Errorf("sql执行错误：%w",err)
+    }
+    return result.RowsAffected()
+}
+
+
+func Get{{ .ModelName }}ById(id int)(*{{ .ModelName }},error){
+      db,err:=openDB()
+      defer db.Close()
+      if err!=nil{
+             return nil, fmt.Errorf("数据库连接异常：%w",err)
+      }
+      sqlstr:=`select ID,NAME from {{ .ModelName }} where ID=?`
+      var result = {{ .ModelName }}{}
+      er := db.QueryRow(sqlstr,id).Scan( &result.Id,&result.Name)
+      if er == nil||errors.Is(er, sql.ErrNoRows) {
+           return &result, nil
+      }
+      return nil,er
+}
+//warning: the condition must be suited for your own business by cxq
+func List{{ .ModelName }}(b *{{ .ModelName }},pageNo ,pageSize int)([]{{ .ModelName }},error){
+      var offset = (pageNo-1)*pageSize
+      db,err:=openDB()
+      defer db.Close()
+       if err!=nil{
+             return nil, fmt.Errorf("数据库连接异常：%w",err)
+       }
+       sqlstr:=`select ID,NAME from {{ .ModelName }} where ID=? and NAME=? limit ?,? `
+      rows, er :=   db.Query(sqlstr, b.Id,b.Name,offset,pageSize)
+      if er!=nil{
+        return nil,er
+       }
+      results:=make([]{{ .ModelName }},0)
+      for rows.Next() {
+            var c={{ .ModelName }}{}
+            er = rows.Scan( &c.Id,&c.Name)
+            if !(er == nil||errors.Is(er, sql.ErrNoRows)) {
+                      return nil, er
+             }
+           results=append(results,c)
+      }
+      return results,nil
+}
+
+func Count{{ .ModelName }}(b *{{ .ModelName }})(int64,error){
+     db,err:=openDB()
+     defer db.Close()
+     if err!=nil{
+         return 0, fmt.Errorf("数据库连接异常：%w",err)
+     }
+     sql:=`select count(1) from {{ .ModelName }} where ID=? and NAME=?`
+      var count int64
+     er:= db.QueryRow(sql, b.Id ,b.Name).Scan(&count)
+     if er!=nil{
+        return 0,fmt.Errorf("sql执行错误：%w",er)
+     }
+     return count,nil
+}
+
+func Delete{{ .ModelName }}(id int64)(int64,error){
+     db,err:=openDB()
+     defer db.Close()
+     if err!=nil{
+         return 0, fmt.Errorf("数据库连接异常：%w",err)
+     }
+     sql:=`delete from {{ .ModelName }} where ID=? `
+     result,er:=db.Exec(sql, id)
+     if er!=nil{
+             return 0,fmt.Errorf("sql执行错误：%w",er)
+     }
+     return result.RowsAffected()
+}

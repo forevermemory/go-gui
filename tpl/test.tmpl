@@ -1,0 +1,9 @@
+{{ .ModelName }}
+你好
+
+{{ .TableName }}
+
+
+
+{{ range  $value := .datas }}{{ $value.field }}	{{ $value.kind }}	`json:"{{ $value.json }}" form:"{{ $value.json }}" gorm:"column:{{ $value.json }};comment:'{{ $value.comment }}'"`
+{{end}}

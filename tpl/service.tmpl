@@ -1,0 +1,40 @@
+package model
+
+/*
+date:{{ .now }}
+*/
+
+import (
+  "🌴🌴/dbaccess"
+)
+
+func Add{{ .ModelName }}(b *dbaccess.{{ .ModelName }})(error){
+       return  dbaccess.Add{{ .ModelName }}(b)
+}
+
+func Update{{ .ModelName }}(b *dbaccess.{{ .ModelName }})(error){
+     return  dbaccess.Update{{ .ModelName }}(b)
+}
+
+
+func Get{{ .ModelName }}ById(id int)(*dbaccess.{{ .ModelName }},error){
+     return dbaccess.Get{{ .ModelName }}ById(id)
+}
+
+func List{{ .ModelName }}(b *dbaccess.{{ .ModelName }})(*dbaccess.DataStore,error){
+     list,err := dbaccess.List{{ .ModelName }}(b)
+     if err != nil{
+        return nil,err
+     }
+     total,err := dbaccess.Count{{ .ModelName }}(b)
+     if err != nil{
+             return nil,err
+      }
+    return &dbaccess.DataStore{Total:total,Data:list,TotalPage:(int(total)+b.PageSize-1)/b.PageSize} ,nil
+}
+
+
+func Delete{{ .ModelName }}(id int) error {
+   return dbaccess.Delete{{ .ModelName }}(id)
+}
+
