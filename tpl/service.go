@@ -12,13 +12,13 @@ import (
 )
 
 // Add{{ .ModelName }} add
-func Add{{ .ModelName }}(b *dbaccess.{{ .ModelName }})(*{{ .ModelName }},error){
-       return  dbaccess.Add{{ .ModelName }}(b)
+func Add{{ .ModelName }}(req *dbaccess.{{ .ModelName }})(*dbaccess.{{ .ModelName }},error){
+       return  dbaccess.Add{{ .ModelName }}(req)
 }
 
 // Update{{ .ModelName }} update
-func Update{{ .ModelName }}(b *dbaccess.{{ .ModelName }})(*{{ .ModelName }},error){
-     return  dbaccess.Update{{ .ModelName }}(b)
+func Update{{ .ModelName }}(req *dbaccess.{{ .ModelName }})(*dbaccess.{{ .ModelName }},error){
+     return  dbaccess.Update{{ .ModelName }}(req)
 }
 
 // Get{{ .ModelName }}ByID get by id
@@ -27,16 +27,16 @@ func Get{{ .ModelName }}ByID(id int)(*dbaccess.{{ .ModelName }},error){
 }
 
 // List{{ .ModelName }}  page by condition
-func List{{ .ModelName }}(b *dbaccess.{{ .ModelName }})(*dbaccess.DataStore,error){
-     list,err := dbaccess.List{{ .ModelName }}(b)
+func List{{ .ModelName }}(req *dbaccess.{{ .ModelName }})(*dbaccess.DataStore,error){
+     list,err := dbaccess.List{{ .ModelName }}(req)
      if err != nil{
         return nil,err
      }
-     total,err := dbaccess.Count{{ .ModelName }}(b)
+     total,err := dbaccess.Count{{ .ModelName }}(req)
      if err != nil{
              return nil,err
       }
-    return &dbaccess.DataStore{Total:total,Data:list,TotalPage:(int(total)+b.PageSize-1)/b.PageSize} ,nil
+    return &dbaccess.DataStore{Total:total,Data:list,TotalPage:(int(total)+req.PageSize-1)/req.PageSize} ,nil
 }
 
 // Delete{{ .ModelName }} delete

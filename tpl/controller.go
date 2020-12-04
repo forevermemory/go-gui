@@ -9,36 +9,36 @@ date:{{ .now }}
 
 import (
   "github.com/gin-gonic/gin"
-  "🌴🌴/dbaccess"
-  "🌴🌴/service"
+  "🌴🌴/db"
+  "🌴🌴/model"
 )
 
 // Add{{ .ModelName }} add
 func Add{{ .ModelName }}(c *gin.Context) interface{}{
-   	var u = dbaccess.{{ .ModelName }}{}
-   	err := c.ShouldBind(&u)
+   	var req = dbaccess.{{ .ModelName }}{}
+   	err := c.ShouldBind(&req)
    	if err != nil {
        return Response{Code: -1, Msg: err.Error()}
    	}
-   	data,err := service.Add{{ .ModelName }}(&u)
+   	data,err := model.Add{{ .ModelName }}(&req)
    	if err != nil{
        return Response{Code: -1, Msg: err.Error()}
    	}
-	  return Response{Code: 0, Msg: "ok", Data: data}
+	return Response{Code: 0, Msg: "添加成功", Data: data}
 }
 
 // Update{{ .ModelName }} update
 func Update{{ .ModelName }}(c *gin.Context) interface{}{
-   	var u = dbaccess.{{ .ModelName }}{}
-   	err := c.ShouldBind(&u)
+   	var req = dbaccess.{{ .ModelName }}{}
+   	err := c.ShouldBind(&req)
    	if err != nil {
        return Response{Code: -1, Msg: err.Error()}
    	}
-   	data,err := service.Update{{ .ModelName }}(&u)
+   	data,err := model.Update{{ .ModelName }}(&req)
     if err != nil{
        return Response{Code: -1, Msg: err.Error()}
     }
-    return Response{Code: 0, Msg: "ok", Data: data}
+    return Response{Code: 0, Msg: "更新成功", Data: data}
 }
 
 // Get{{ .ModelName }}ByID  get xxx by id
@@ -48,7 +48,7 @@ func Get{{ .ModelName }}ByID(c *gin.Context) interface{}{
     if err != nil {
       return Response{Code: -1, Msg: err.Error()}
     }
-     data,err := service.Get{{ .ModelName }}ByID(id)
+     data,err := model.Get{{ .ModelName }}ByID(id)
      if err != nil{
        return Response{Code: -1, Msg: err.Error()}
      }
@@ -57,12 +57,12 @@ func Get{{ .ModelName }}ByID(c *gin.Context) interface{}{
 
 // List{{ .ModelName }} // list by page condition
 func List{{ .ModelName }}(c *gin.Context) interface{}{
-    var u = dbaccess.{{ .ModelName }}{PageSize:10,PageNo:1}
-    err := c.ShouldBind(&u)
+    var req = dbaccess.{{ .ModelName }}{}
+    err := c.ShouldBind(&req)
     if err != nil {
        return Response{Code: -1, Msg: err.Error()}
     }
-    data,err := service.List{{ .ModelName }}(&u)
+    data,err := model.List{{ .ModelName }}(&req)
     if err != nil{
        return Response{Code: -1, Msg: err.Error()}
      }
@@ -71,16 +71,16 @@ func List{{ .ModelName }}(c *gin.Context) interface{}{
 
 // Delete{{ .ModelName }} Delete
 func Delete{{ .ModelName }}(c *gin.Context) interface{}{
-    var u = dbaccess.{{ .ModelName }}{}
-    err := c.ShouldBind(&u)
+    var req = dbaccess.{{ .ModelName }}{}
+    err := c.ShouldBind(&req)
     if err != nil {
        return Response{Code: -1, Msg: err.Error()}
     }
-    err = service.Delete{{ .ModelName }}(u.ID)
+    err = model.Delete{{ .ModelName }}(req.ID)
     if err != nil{
        return Response{Code: -1, Msg: err.Error()}
     }
-    return Response{Code: 0, Msg: "ok"}
+    return Response{Code: 0, Msg: "删除成功"}
 }
 
 /*
@@ -89,12 +89,17 @@ func Delete{{ .ModelName }}(c *gin.Context) interface{}{
   { 
     🐲🐲.POST("/add", route(controller.Add{{ .ModelName }}))
     🐲🐲.POST("/update", route(controller.Update{{ .ModelName }}))
-    🐲🐲.GET("/list/:oid", route(controller.Get{{ .ModelName }}ById))
+    🐲🐲.GET("/list/:oid", route(controller.Get{{ .ModelName }}ByID))
     🐲🐲.GET("/list", route(controller.List{{ .ModelName }}))
     🐲🐲.GET("/delete", route(controller.Delete{{ .ModelName }}))
   }
 
 */
 
+func route(f func(ctx *gin.Context)interface{})gin.HandlerFunc{
+	return func(context *gin.Context) {
+		context.JSON(200, f(context))
+	}
+}
 
 `
