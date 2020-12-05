@@ -1,4 +1,4 @@
-package tpl
+package v1
 
 import (
 	"os"

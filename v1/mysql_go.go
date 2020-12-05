@@ -1,4 +1,4 @@
-package tpl
+package v1
 
 const MYSQL_TEMPLATE = `DROP TABLE IF EXISTS ` + "`{{ .TableName }}`;" + `
 ` + "CREATE TABLE `{{ .TableName }}` ( " + `

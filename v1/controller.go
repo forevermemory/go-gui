@@ -1,4 +1,4 @@
-package tpl
+package v1
 
 const CONTROLLER = `
 package controller
@@ -84,15 +84,17 @@ func Delete{{ .ModelName }}(c *gin.Context) interface{}{
 }
 
 /*
-路由
-  🐲🐲 := r.Group(prefix + "/👌👌👌")
-  { 
-    🐲🐲.POST("/add", route(controller.Add{{ .ModelName }}))
-    🐲🐲.POST("/update", route(controller.Update{{ .ModelName }}))
-    🐲🐲.GET("/list/:oid", route(controller.Get{{ .ModelName }}ByID))
-    🐲🐲.GET("/list", route(controller.List{{ .ModelName }}))
-    🐲🐲.GET("/delete", route(controller.Delete{{ .ModelName }}))
-  }
+	路由
+
+	你可以走rest风格
+	🐲🐲 := r.Group(prefix + "/👌👌👌")
+	{ 
+		🐲🐲.POST("/add", route(controller.Add{{ .ModelName }}))
+		🐲🐲.POST("/update", route(controller.Update{{ .ModelName }}))
+		🐲🐲.GET("/list/:oid", route(controller.Get{{ .ModelName }}ByID))
+		🐲🐲.GET("/list", route(controller.List{{ .ModelName }}))
+		🐲🐲.GET("/delete", route(controller.Delete{{ .ModelName }}))
+	}
 
 */
 

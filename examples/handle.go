@@ -2,8 +2,8 @@ package examples
 
 import (
 	"fmt"
-	gtpl "gui/tpl"
 	"gui/utils"
+	gtpl "gui/v1"
 	"os"
 	"text/template"
 	"time"
@@ -20,6 +20,52 @@ var (
 	count        = 0
 	tableNamePtr *widget.Entry
 )
+
+// NewWindow ...
+func NewWindow() {
+	// 初始化一个app
+	a := app.New()
+	w := a.NewWindow("w1")
+	w.SetTitle("🌵🌴🌲🌳👀🔞🈲👀🌳🌲🌴🌵")
+
+	box1 := widget.NewHBox()
+	box2 := widget.NewHBox()
+
+	tname := widget.NewEntry()
+	tableNamePtr = tname
+	labelTname := widget.NewLabel("table_name")
+	box1.Append(labelTname)
+	box1.Append(tname)
+
+	button := widget.NewButton("new item", addNewItem)
+	button2 := widget.NewButton("gene", aggerateeAndGenerate)
+	buttonExit := widget.NewButton("exit", func() {
+		w.Close()
+		os.Exit(0)
+	})
+
+	// button.
+	box2.Append(button)
+	box2.Append(button2)
+	box2.Append(buttonExit)
+	container := fyne.NewContainerWithLayout(&Diagonal{}, box1, box2)
+	// 初始化一个布局容器
+
+	// 从管道取box 往这个容器中放
+	go func() {
+		for {
+			select {
+			case box := <-boxChan:
+				container.AddObject(box)
+			default:
+				time.Sleep(time.Millisecond * 200)
+			}
+		}
+	}()
+
+	w.SetContent(container)
+	w.ShowAndRun()
+}
 
 func newBox() {
 	count++
@@ -85,7 +131,7 @@ func aggerateeAndGenerate() {
 	fmt.Println(results)
 	ModelName := utils.Marshal(tableNamePtr.Text)
 	TableName := utils.UnMarshal(tableNamePtr.Text)
-	// TODO   整合自动生成sql的代码
+	//    整合自动生成sql的代码
 	go renderController(ModelName, TableName)
 	go renderService(ModelName, TableName)
 	go renderGorm(ModelName, TableName)
@@ -246,50 +292,4 @@ func renderController(m, t string) {
 		return
 	}
 	f.Close()
-}
-
-// NewWindow ...
-func NewWindow() {
-	// 初始化一个app
-	a := app.New()
-	w := a.NewWindow("w1")
-	w.SetTitle("🌵🌴🌲🌳👀🔞🈲👀🌳🌲🌴🌵")
-
-	box1 := widget.NewHBox()
-	box2 := widget.NewHBox()
-
-	tname := widget.NewEntry()
-	tableNamePtr = tname
-	labelTname := widget.NewLabel("table_name")
-	box1.Append(labelTname)
-	box1.Append(tname)
-
-	button := widget.NewButton("new item", addNewItem)
-	button2 := widget.NewButton("gene", aggerateeAndGenerate)
-	buttonExit := widget.NewButton("exit", func() {
-		w.Close()
-		os.Exit(0)
-	})
-
-	// button.
-	box2.Append(button)
-	box2.Append(button2)
-	box2.Append(buttonExit)
-	container := fyne.NewContainerWithLayout(&Diagonal{}, box1, box2)
-	// 初始化一个布局容器
-
-	// TODO for 从管道取box 往这个容器中放
-	go func() {
-		for {
-			box, ok := <-boxChan //
-			if !ok {
-				continue // 取不到..
-			}
-			container.AddObject(box)
-
-		}
-	}()
-
-	w.SetContent(container)
-	w.ShowAndRun()
 }

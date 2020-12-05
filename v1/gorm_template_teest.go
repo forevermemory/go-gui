@@ -1,4 +1,4 @@
-package tpl
+package v1
 
 const TEMPLATE_TEST_GORM = `
 package dbaccess
