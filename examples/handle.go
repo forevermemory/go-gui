@@ -131,15 +131,17 @@ func aggerateeAndGenerate() {
 	fmt.Println(results)
 	ModelName := utils.Marshal(tableNamePtr.Text)
 	TableName := utils.UnMarshal(tableNamePtr.Text)
+
+	var isNodecode = true
 	//    整合自动生成sql的代码
 	go renderController(ModelName, TableName)
 	go renderService(ModelName, TableName)
 	go renderGorm(ModelName, TableName)
 	go renderGormTest(ModelName, TableName)
-	go renderMysql(ModelName, TableName)
+	go renderMysql(ModelName, TableName, isNodecode)
 }
 
-func renderMysql(m, t string) {
+func renderMysql(m, t string, isNodecode bool) {
 	// tpl, err := template.ParseFiles("tpl/gorm.tmpl")
 	tpl, err := template.New("render_mysql").Parse(gtpl.MYSQL_TEMPLATE)
 
@@ -149,6 +151,7 @@ func renderMysql(m, t string) {
 	}
 	content := make(map[string]interface{})
 	content["ModelName"] = m
+	content["IsNodecode"] = isNodecode
 	content["TableName"] = t
 	content["now"] = time.Now().Format("2006-01-02 15:04:05")
 	// 处理results
